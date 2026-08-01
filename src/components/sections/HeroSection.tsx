@@ -1,11 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Download, ChevronRight, ChevronDown } from "lucide-react";
 import Abstract3DShape from "../ui/Abstract3DShape";
 
 // Stagger children animation container
-const containerVariants = {
+const containerVariants: Variants = {
     hidden: {},
     visible: {
         transition: {
@@ -15,13 +15,13 @@ const containerVariants = {
     },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
     hidden: { opacity: 0, y: 24, filter: "blur(6px)" },
     visible: {
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
-        transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+        transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
     },
 };
 
@@ -91,11 +91,6 @@ export default function HeroSection() {
                 </motion.div>
 
                 {/* ── Right: 3D Orb ── */}
-                {/* 
-                  FIX: Changed from scale animation (0.8→1) to opacity-only fade.
-                  Scale animation was causing the orb to appear small/offset on initial load
-                  because it affected the layout dimensions of the Canvas container.
-                */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

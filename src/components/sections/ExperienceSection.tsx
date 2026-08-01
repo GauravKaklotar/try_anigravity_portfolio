@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Briefcase } from "lucide-react";
 
-const cardVariants = {
+const cardVariants: Variants = {
     hidden: { opacity: 0, x: -40, filter: "blur(4px)" },
     visible: (i: number) => ({
         opacity: 1,
@@ -12,7 +12,7 @@ const cardVariants = {
         transition: {
             duration: 0.6,
             delay: i * 0.15,
-            ease: [0.16, 1, 0.3, 1],
+            ease: [0.16, 1, 0.3, 1] as const,
         },
     }),
 };
@@ -62,7 +62,7 @@ export default function ExperienceSection() {
                     initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
                     whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
                     className="mb-12 md:mb-16 flex items-center gap-4"
                 >
                     <motion.div

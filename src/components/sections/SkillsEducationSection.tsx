@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { GraduationCap, Zap, BrainCircuit } from "lucide-react";
 
-const skillBadgeVariants = {
+const skillBadgeVariants: Variants = {
     hidden: { opacity: 0, scale: 0.8, y: 10 },
     visible: (i: number) => ({
         opacity: 1,
@@ -12,7 +12,7 @@ const skillBadgeVariants = {
         transition: {
             delay: i * 0.03,
             duration: 0.4,
-            ease: [0.16, 1, 0.3, 1],
+            ease: [0.16, 1, 0.3, 1] as const,
         },
     }),
 };
@@ -60,7 +60,7 @@ export default function SkillsEducationSection() {
                             initial={{ opacity: 0, x: -20, filter: "blur(4px)" }}
                             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
                             className="mb-10 md:mb-12 flex items-center gap-4"
                         >
                             <motion.div
@@ -80,7 +80,7 @@ export default function SkillsEducationSection() {
                                     initial={{ opacity: 0, y: 25, filter: "blur(4px)" }}
                                     whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                                     viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                                    transition={{ duration: 0.5, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
                                     className="bg-white/[0.03] border border-white/10 p-5 sm:p-6 rounded-2xl hover:border-purple-500/30 transition-all duration-500 group relative overflow-hidden"
                                     whileHover={{ boxShadow: "0 0 30px rgba(168,85,247,0.08)" }}
                                 >
@@ -110,7 +110,7 @@ export default function SkillsEducationSection() {
                             initial={{ opacity: 0, x: 20, filter: "blur(4px)" }}
                             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
                             className="mb-10 md:mb-12 flex items-center gap-4"
                         >
                             <motion.div
@@ -130,7 +130,7 @@ export default function SkillsEducationSection() {
                                     initial={{ opacity: 0, scale: 0.92, y: 15 }}
                                     whileInView={{ opacity: 1, scale: 1, y: 0 }}
                                     viewport={{ once: true }}
-                                    transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                                    transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] as const }}
                                     className="bg-white/[0.03] border border-white/10 p-4 sm:p-5 rounded-2xl group hover:border-green-500/20 transition-all duration-500"
                                     whileHover={{ boxShadow: "0 0 25px rgba(16,185,129,0.06)" }}
                                 >

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useEffect, useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -12,12 +12,12 @@ const NAV_LINKS = [
     { name: "Playground", href: "#playground" },
 ];
 
-const linkVariants = {
+const linkVariants: Variants = {
     hidden: { opacity: 0, y: -8 },
     visible: (i: number) => ({
         opacity: 1,
         y: 0,
-        transition: { delay: 0.4 + i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+        transition: { delay: 0.4 + i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
     }),
 };
 
@@ -65,7 +65,7 @@ export default function Navbar() {
             <motion.nav
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "py-3" : "py-5"
                     }`}
             >
@@ -151,7 +151,7 @@ export default function Navbar() {
                                         initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
                                         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                                         exit={{ opacity: 0, y: -15 }}
-                                        transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                        transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={`text-3xl font-bold transition-colors ${isActive
                                             ? "text-[var(--color-accent)]"
