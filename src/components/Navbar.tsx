@@ -1,33 +1,54 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Menu, X } from "lucide-react";
+
+const NAV_LINKS = [
+    { name: "Experience", href: "#experience" },
+    { name: "Education", href: "#education" },
+    { name: "Projects", href: "#projects" },
+    { name: "Contact", href: "#contact" },
+    { name: "Playground", href: "#playground" },
+];
+
+const linkVariants = {
+    hidden: { opacity: 0, y: -8 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: 0.4 + i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+    }),
+};
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState("");
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 50) {
-                setScrolled(true);
-            } else {
-                setScrolled(false);
+    // Scroll detection + scroll spy
+    const handleScroll = useCallback(() => {
+        setScrolled(window.scrollY > 50);
+
+        // Scroll spy: find which section is in view
+        const sections = NAV_LINKS.map((l) => l.href.replace("#", ""));
+        let current = "";
+        for (const id of sections) {
+            const el = document.getElementById(id);
+            if (el) {
+                const rect = el.getBoundingClientRect();
+                if (rect.top <= 200) {
+                    current = id;
+                }
             }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        }
+        setActiveSection(current);
     }, []);
 
-    const navLinks = [
-        { name: "Experience", href: "#experience" },
-        { name: "Education", href: "#education" },
-        { name: "Projects", href: "#projects" },
-        { name: "Contact", href: "#contact" },
-        { name: "Playground", href: "#playground" },
-    ];
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
 
     // Disable body scroll when mobile menu is open
     useEffect(() => {
@@ -42,16 +63,16 @@ export default function Navbar() {
     return (
         <>
             <motion.nav
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.5 }}
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-4" : "py-6"
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "py-3" : "py-5"
                     }`}
             >
-                <div className="container mx-auto px-6 max-w-5xl">
+                <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                     <div
-                        className={`flex items-center justify-between rounded-full px-6 py-3 transition-all duration-300 ${scrolled || mobileMenuOpen
-                            ? "bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/20"
+                        className={`flex items-center justify-between rounded-full px-5 sm:px-6 py-3 transition-all duration-500 ${scrolled || mobileMenuOpen
+                            ? "bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-lg shadow-black/20"
                             : "bg-transparent"
                             }`}
                     >
@@ -66,17 +87,36 @@ export default function Navbar() {
                             GK<span className="text-[var(--color-accent)]">.</span>
                         </motion.a>
 
-                        {/* Desktop Nav Links */}
+                        {/* Desktop Nav Links — staggered entrance */}
                         <div className="hidden md:flex items-center gap-8">
-                            {navLinks.map((link) => (
-                                <a
-                                    key={link.name}
-                                    href={link.href}
-                                    className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                                >
-                                    {link.name}
-                                </a>
-                            ))}
+                            {NAV_LINKS.map((link, i) => {
+                                const isActive = activeSection === link.href.replace("#", "");
+                                return (
+                                    <motion.a
+                                        key={link.name}
+                                        href={link.href}
+                                        custom={i}
+                                        variants={linkVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className={`text-sm font-medium transition-colors relative ${isActive
+                                            ? "text-white"
+                                            : "text-gray-400 hover:text-white"
+                                            }`}
+                                    >
+                                        {link.name}
+                                        {/* Active indicator dot */}
+                                        {isActive && (
+                                            <motion.span
+                                                layoutId="nav-active-dot"
+                                                className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--color-accent)]"
+                                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                                style={{ boxShadow: "0 0 8px var(--color-accent)" }}
+                                            />
+                                        )}
+                                    </motion.a>
+                                );
+                            })}
                         </div>
 
                         {/* Mobile Menu Toggle Button */}
@@ -95,26 +135,33 @@ export default function Navbar() {
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                        transition={{ duration: 0.2 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
                         className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center pointer-events-auto"
                     >
                         <div className="flex flex-col items-center space-y-8">
-                            {navLinks.map((link, i) => (
-                                <motion.a
-                                    key={link.name}
-                                    href={link.href}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="text-3xl font-bold text-gray-300 hover:text-[var(--color-accent)] transition-colors"
-                                >
-                                    {link.name}
-                                </motion.a>
-                            ))}
+                            {NAV_LINKS.map((link, i) => {
+                                const isActive = activeSection === link.href.replace("#", "");
+                                return (
+                                    <motion.a
+                                        key={link.name}
+                                        href={link.href}
+                                        initial={{ opacity: 0, y: 30, filter: "blur(4px)" }}
+                                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                                        exit={{ opacity: 0, y: -15 }}
+                                        transition={{ delay: i * 0.08, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`text-3xl font-bold transition-colors ${isActive
+                                            ? "text-[var(--color-accent)]"
+                                            : "text-gray-300 hover:text-[var(--color-accent)]"
+                                            }`}
+                                    >
+                                        {link.name}
+                                    </motion.a>
+                                );
+                            })}
                         </div>
                     </motion.div>
                 )}

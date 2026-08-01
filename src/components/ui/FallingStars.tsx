@@ -73,12 +73,18 @@ export default function FallingStars() {
             if (!ctx) return;
 
             // Resize canvas to fill viewport
-            if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const targetW = window.innerWidth;
+            const targetH = window.innerHeight;
+            if (canvas.width !== targetW * dpr || canvas.height !== targetH * dpr) {
+                canvas.width = targetW * dpr;
+                canvas.height = targetH * dpr;
+                canvas.style.width = targetW + "px";
+                canvas.style.height = targetH + "px";
+                ctx.scale(dpr, dpr);
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, targetW, targetH);
 
             const stars = starsRef.current;
 
@@ -91,9 +97,9 @@ export default function FallingStars() {
                     continue;
                 }
 
-                // Store trail positions
+                // Store trail positions (reduced max trail for perf)
                 s.trail.push({ x: s.x, y: s.y });
-                if (s.trail.length > 8) s.trail.shift();
+                if (s.trail.length > 6) s.trail.shift();
 
                 s.x += s.vx * delta;
                 s.y += s.vy * delta;
@@ -158,8 +164,11 @@ export default function FallingStars() {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (canvas) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + "px";
+            canvas.style.height = window.innerHeight + "px";
         }
     }, []);
 

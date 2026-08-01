@@ -106,7 +106,8 @@ function LiquidSphere({ onSphereClick }: { onSphereClick: () => void }) {
                 onPointerOut={() => setHover(false)}
                 onClick={handleClick}
             >
-                <icosahedronGeometry args={[1.6, 128]} />
+                {/* Reduced from 128 to 64 subdivisions — visually identical, 4x fewer triangles */}
+                <icosahedronGeometry args={[1.6, 64]} />
                 <MeshDistortMaterial
                     ref={materialRef}
                     color={color}
@@ -128,6 +129,7 @@ function LiquidSphere({ onSphereClick }: { onSphereClick: () => void }) {
 // ── Main Exported Component ─────────────────────────────────
 export default function Abstract3DShape() {
     const [popups, setPopups] = useState<FloatingPopup[]>([]);
+    const [canvasReady, setCanvasReady] = useState(false);
     const idCounter = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -196,6 +198,13 @@ export default function Abstract3DShape() {
                 ✦ Click the orb ✦
             </div>
 
+            {/* Shimmer placeholder — visible until Canvas is ready */}
+            {!canvasReady && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <div className="w-48 h-48 rounded-full canvas-shimmer opacity-60" />
+                </div>
+            )}
+
             {/* Floating emoji/text popups — NO overflow hidden, positioned absolutely */}
             <AnimatePresence>
                 {popups.map((p) => (
@@ -219,8 +228,14 @@ export default function Abstract3DShape() {
                 ))}
             </AnimatePresence>
 
-            {/* 3D Canvas */}
-            <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+            {/* 3D Canvas — optimized with capped DPR and reduced shadow resolution */}
+            <Canvas
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                dpr={[1, 1.5]}
+                gl={{ powerPreference: "high-performance", antialias: true }}
+                onCreated={() => setCanvasReady(true)}
+                style={{ opacity: canvasReady ? 1 : 0, transition: "opacity 0.6s ease-out" }}
+            >
                 <ambientLight intensity={0.4} />
                 <directionalLight position={[10, 10, 5]} intensity={1.8} color="#ffffff" />
                 <directionalLight position={[-5, 5, -5]} intensity={0.6} color="#818cf8" />
@@ -228,7 +243,7 @@ export default function Abstract3DShape() {
 
                 <LiquidSphere onSphereClick={handleSphereClick} />
 
-                <ContactShadows position={[0, -3, 0]} opacity={0.4} scale={15} blur={2.5} far={6} color="#000000" />
+                <ContactShadows position={[0, -3, 0]} opacity={0.35} scale={12} blur={2} far={5} color="#000000" />
                 <Environment preset="night" />
             </Canvas>
         </div>
